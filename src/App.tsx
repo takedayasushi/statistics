@@ -100,7 +100,7 @@ function App() {
               label={{ value: '表の出る割合', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }} 
             />
             <Tooltip 
-              formatter={(value: number) => [value.toFixed(3), '表の割合']}
+              formatter={(value: any) => [Number(value).toFixed(3), '表の割合']}
               labelFormatter={(label) => `${label}回目`}
             />
             <ReferenceLine y={0.5} stroke="red" strokeDasharray="3 3" label={{ value: '理論値 (50%)', position: 'insideTopRight', fill: 'red' }} />
