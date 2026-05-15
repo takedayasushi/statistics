@@ -10,8 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mantine/charts": "^9.2.1",
+    "@mantine/core": "^9.2.1",
+    "@mantine/hooks": "^9.2.1",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.16.0",
+    "postcss": "^8.5.14",
+    "postcss-preset-mantine": "^1.18.0",
+    "postcss-simple-vars": "^7.0.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "recharts": "^3.8.1"
