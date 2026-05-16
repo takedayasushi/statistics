@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ResponsiveContainer } from 'recharts';
 import { Container, Title, Paper, Text, Button, Group } from '@mantine/core';
-import './App.css';
+import '../App.css';
 
 function App() {
   const [flips, setFlips] = useState(0);
