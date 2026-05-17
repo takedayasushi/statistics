@@ -4,6 +4,7 @@ import { Container, Title, Text, Paper, Button, Group, Box } from '@mantine/core
 export default function Correlation() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [correlationR, setCorrelationR] = useState<string>("0.00");
+  const [rSquared, setRSquared] = useState<string>("0.00");
   const pointsRef = useRef<{ x: number, y: number }[]>([]);
   const draggedPointRef = useRef<{ x: number, y: number } | null>(null);
 
@@ -66,6 +67,7 @@ export default function Correlation() {
     if (points.length > 1) {
       const { a, b, r } = calculateRegressionAndCorrelation(points);
       setCorrelationR(r.toFixed(2));
+      setRSquared((r * r).toFixed(2));
 
       ctx.beginPath();
       ctx.strokeStyle = '#228be6';
@@ -181,8 +183,10 @@ export default function Correlation() {
       <Title order={1} mb="md" c="deep-blue.9">直感！相関関係メーカー</Title>
       <Text size="lg" mb="xl">
         世の中の様々なデータには、互いに影響し合っている関係性が見られます。例えば「気温」と「アイスクリームの売上」など、一方が増えればもう一方も増える（あるいは減る）といった関係です。<br/>
-        この「関係の強さと向き」を示すのが「相関係数 (r)」です。<br/>
-        下のグラフ上の点を指やマウスで自由に動かして、データ同士の結びつきの強さ（相関係数）や回帰直線がどのように変化するかを体験してみましょう。
+        この「関係の強さと向き」を示すのが<strong>「相関係数 (r)」</strong>です。<br/><br/>
+        また、相関係数を2乗したものを<strong>「決定係数 (R²)」</strong>と呼びます。<br/>
+        決定係数は「結果（アイスの売上）のばらつきのうち、原因（気温）によってどれくらい説明できるか」という<strong>予測の当てはまりの良さ</strong>（0.00〜1.00）を表します。例えば R² = 0.8 なら「80%は気温で説明できる（残り20%は別の要因）」という意味になります。<br/><br/>
+        下のグラフ上の点を指やマウスで自由に動かして、データ同士の結びつきの強さ（相関係数）や回帰直線、そして予測の精度（決定係数）がどのように変化するかを体験してみましょう。
       </Text>
 
       <Paper shadow="sm" p="md" withBorder style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: '#f8f9fa' }}>
@@ -201,7 +205,10 @@ export default function Correlation() {
           />
         </Box>
         <Group justify="space-between" w="100%" style={{ maxWidth: '600px' }}>
-          <Text size="xl" fw={700} c="deep-blue.8">相関係数 r: {correlationR}</Text>
+          <Box>
+            <Text size="xl" fw={700} c="deep-blue.8">相関係数 r: {correlationR}</Text>
+            <Text size="md" fw={500} c="dimmed">決定係数 R²: {rSquared}</Text>
+          </Box>
           <Button onClick={handleReset} variant="outline" color="deep-blue.7">リセット</Button>
         </Group>
       </Paper>
