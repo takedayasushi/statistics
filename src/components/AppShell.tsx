@@ -9,8 +9,24 @@ export function AppLayout() {
   return (
     <AppShell
       header={{ height: 60 }}
-      navbar={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !opened } }}
+      navbar={{ 
+        width: 300, 
+        breakpoint: 'sm', 
+        collapsed: { mobile: !opened } 
+      }}
       padding="md"
+      styles={(theme) => ({
+        main: {
+          backgroundColor: theme.colors.gray[0],
+        },
+        navbar: {
+          // モバイル時に横幅70%にして、少し透過させる
+          width: '70% !important',
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(4px)',
+          boxShadow: '2px 0 10px rgba(0, 0, 0, 0.1)',
+        }
+      })}
     >
       <AppShell.Header>
         <Group h="100%" px="md">
@@ -24,16 +40,19 @@ export function AppLayout() {
           href="#/"
           label="ホーム"
           leftSection={<IconHome2 size="1rem" stroke={1.5} />}
+          onClick={toggle}
         />
         <NavLink
           href="#/law-of-large-numbers"
           label="大数の法則"
           leftSection={<IconChartLine size="1rem" stroke={1.5} />}
+          onClick={toggle}
         />
         <NavLink
           href="#/correlation"
           label="直感！相関関係メーカー"
           leftSection={<IconChartLine size="1rem" stroke={1.5} />}
+          onClick={toggle}
         />
         <NavLink
           href="#/central-limit-theorem"
