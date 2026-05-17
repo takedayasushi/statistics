@@ -4,7 +4,7 @@ import { IconChartLine, IconHome2 } from '@tabler/icons-react';
 import { Outlet } from 'react-router-dom';
 
 export function AppLayout() {
-  const [opened, { toggle }] = useDisclosure();
+  const [opened, { toggle, close }] = useDisclosure();
 
   return (
     <AppShell
@@ -18,13 +18,6 @@ export function AppLayout() {
       styles={(theme) => ({
         main: {
           backgroundColor: theme.colors.gray[0],
-        },
-        navbar: {
-          // モバイル時に横幅70%にして、少し透過させる
-          width: '70% !important',
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          backdropFilter: 'blur(4px)',
-          boxShadow: '2px 0 10px rgba(0, 0, 0, 0.1)',
         }
       })}
     >
@@ -35,24 +28,32 @@ export function AppLayout() {
         </Group>
       </AppShell.Header>
 
-      <AppShell.Navbar p="md">
+      <AppShell.Navbar 
+        p="md"
+        style={{
+          width: '70%',
+          backgroundColor: 'rgba(255, 255, 255, 0.85)',
+          backdropFilter: 'blur(5px)',
+          boxShadow: '2px 0 10px rgba(0,0,0,0.1)'
+        }}
+      >
         <NavLink
           href="#/"
           label="ホーム"
           leftSection={<IconHome2 size="1rem" stroke={1.5} />}
-          onClick={toggle}
+          onClick={close}
         />
         <NavLink
           href="#/law-of-large-numbers"
           label="大数の法則"
           leftSection={<IconChartLine size="1rem" stroke={1.5} />}
-          onClick={toggle}
+          onClick={close}
         />
         <NavLink
           href="#/correlation"
           label="直感！相関関係メーカー"
           leftSection={<IconChartLine size="1rem" stroke={1.5} />}
-          onClick={toggle}
+          onClick={close}
         />
         <NavLink
           href="#/central-limit-theorem"
