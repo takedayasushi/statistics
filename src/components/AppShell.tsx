@@ -29,7 +29,11 @@ export function AppLayout() {
           href="#/law-of-large-numbers"
           label="大数の法則"
           leftSection={<IconChartLine size="1rem" stroke={1.5} />}
-          active
+        />
+        <NavLink
+          href="#/correlation"
+          label="直感！相関関係メーカー"
+          leftSection={<IconChartLine size="1rem" stroke={1.5} />}
         />
         <NavLink
           href="#/central-limit-theorem"

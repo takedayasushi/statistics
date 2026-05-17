@@ -1,0 +1,210 @@
+import { useEffect, useRef, useState } from 'react';
+import { Container, Title, Text, Paper, Button, Group, Box } from '@mantine/core';
+
+export default function Correlation() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [correlationR, setCorrelationR] = useState<string>("0.00");
+  const pointsRef = useRef<{ x: number, y: number }[]>([]);
+  const draggedPointRef = useRef<{ x: number, y: number } | null>(null);
+
+  const numPoints = 15;
+  const pointRadius = 15;
+
+  const initializePoints = (canvasWidth: number, canvasHeight: number) => {
+    const newPoints = [];
+    for (let i = 0; i < numPoints; i++) {
+      newPoints.push({
+        x: Math.random() * canvasWidth,
+        y: Math.random() * canvasHeight
+      });
+    }
+    pointsRef.current = newPoints;
+  };
+
+  const calculateRegressionAndCorrelation = (data: { x: number, y: number }[]) => {
+    const n = data.length;
+    if (n < 2) return { a: 0, b: 0, r: 0 };
+
+    let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0, sumYY = 0;
+
+    for (let i = 0; i < n; i++) {
+      sumX += data[i].x;
+      sumY += data[i].y;
+      sumXY += data[i].x * data[i].y;
+      sumXX += data[i].x * data[i].x;
+      sumYY += data[i].y * data[i].y;
+    }
+
+    const meanX = sumX / n;
+    const meanY = sumY / n;
+
+    const numeratorA = (n * sumXY - sumX * sumY);
+    const denominatorA = (n * sumXX - sumX * sumX);
+    
+    const a = denominatorA === 0 ? 0 : numeratorA / denominatorA;
+    const b = meanY - a * meanX;
+
+    const numeratorR = (n * sumXY - sumX * sumY);
+    const denominatorR = Math.sqrt((n * sumXX - sumX * sumX) * (n * sumYY - sumY * sumY));
+
+    const r = denominatorR === 0 ? 0 : numeratorR / denominatorR;
+
+    return { a, b, r };
+  };
+
+  const draw = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const points = pointsRef.current;
+
+    // 回帰直線の描画
+    if (points.length > 1) {
+      const { a, b, r } = calculateRegressionAndCorrelation(points);
+      setCorrelationR(r.toFixed(2));
+
+      ctx.beginPath();
+      ctx.strokeStyle = '#228be6';
+      ctx.lineWidth = 3;
+      ctx.moveTo(0, a * 0 + b);
+      ctx.lineTo(canvas.width, a * canvas.width + b);
+      ctx.stroke();
+    }
+
+    // データポイントの描画
+    points.forEach(point => {
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, pointRadius, 0, Math.PI * 2);
+      ctx.fillStyle = draggedPointRef.current === point ? '#fa5252' : '#40c057';
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#212529';
+      ctx.stroke();
+    });
+  };
+
+  const getEventPos = (event: MouseEvent | TouchEvent, canvas: HTMLCanvasElement) => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    if ('touches' in event && event.touches.length > 0) {
+      return {
+        x: (event.touches[0].clientX - rect.left) * scaleX,
+        y: (event.touches[0].clientY - rect.top) * scaleY
+      };
+    } else if ('clientX' in event) {
+      return {
+        x: ((event as MouseEvent).clientX - rect.left) * scaleX,
+        y: ((event as MouseEvent).clientY - rect.top) * scaleY
+      };
+    }
+    return { x: 0, y: 0 };
+  };
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // 初期化
+    if (pointsRef.current.length === 0) {
+      initializePoints(canvas.width, canvas.height);
+    }
+    draw();
+
+    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
+      event.preventDefault();
+      const pos = getEventPos(event, canvas);
+      for (let i = 0; i < pointsRef.current.length; i++) {
+        const p = pointsRef.current[i];
+        const dist = Math.sqrt(Math.pow(pos.x - p.x, 2) + Math.pow(pos.y - p.y, 2));
+        if (dist < pointRadius) {
+          draggedPointRef.current = p;
+          break;
+        }
+      }
+    };
+
+    const handlePointerMove = (event: MouseEvent | TouchEvent) => {
+      event.preventDefault();
+      if (draggedPointRef.current) {
+        const pos = getEventPos(event, canvas);
+        draggedPointRef.current.x = pos.x;
+        draggedPointRef.current.y = pos.y;
+        draw();
+      }
+    };
+
+    const handlePointerUp = (event: MouseEvent | TouchEvent) => {
+      event.preventDefault();
+      draggedPointRef.current = null;
+      draw();
+    };
+
+    canvas.addEventListener('mousedown', handlePointerDown);
+    canvas.addEventListener('mousemove', handlePointerMove);
+    canvas.addEventListener('mouseup', handlePointerUp);
+    canvas.addEventListener('mouseleave', handlePointerUp);
+
+    canvas.addEventListener('touchstart', handlePointerDown, { passive: false });
+    canvas.addEventListener('touchmove', handlePointerMove, { passive: false });
+    canvas.addEventListener('touchend', handlePointerUp, { passive: false });
+    canvas.addEventListener('touchcancel', handlePointerUp, { passive: false });
+
+    return () => {
+      canvas.removeEventListener('mousedown', handlePointerDown);
+      canvas.removeEventListener('mousemove', handlePointerMove);
+      canvas.removeEventListener('mouseup', handlePointerUp);
+      canvas.removeEventListener('mouseleave', handlePointerUp);
+
+      canvas.removeEventListener('touchstart', handlePointerDown);
+      canvas.removeEventListener('touchmove', handlePointerMove);
+      canvas.removeEventListener('touchend', handlePointerUp);
+      canvas.removeEventListener('touchcancel', handlePointerUp);
+    };
+  }, []);
+
+  const handleReset = () => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      initializePoints(canvas.width, canvas.height);
+      draw();
+    }
+  };
+
+  return (
+    <Container size="md" py="xl">
+      <Title order={1} mb="md" c="deep-blue.9">直感！相関関係メーカー</Title>
+      <Text size="lg" mb="xl">
+        世の中の様々なデータには、互いに影響し合っている関係性が見られます。例えば「気温」と「アイスクリームの売上」など、一方が増えればもう一方も増える（あるいは減る）といった関係です。<br/>
+        この「関係の強さと向き」を示すのが「相関係数 (r)」です。<br/>
+        下のグラフ上の点を指やマウスで自由に動かして、データ同士の結びつきの強さ（相関係数）や回帰直線がどのように変化するかを体験してみましょう。
+      </Text>
+
+      <Paper shadow="sm" p="md" withBorder style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: '#f8f9fa' }}>
+        <Box mb="md" style={{ width: '100%', overflowX: 'auto', display: 'flex', justifyContent: 'center' }}>
+           <canvas 
+            ref={canvasRef} 
+            width={600} 
+            height={400} 
+            style={{ 
+              border: '1px solid #ced4da', 
+              backgroundColor: '#fff', 
+              touchAction: 'none',
+              maxWidth: '100%',
+              borderRadius: '8px'
+            }} 
+          />
+        </Box>
+        <Group justify="space-between" w="100%" style={{ maxWidth: '600px' }}>
+          <Text size="xl" fw={700} c="deep-blue.8">相関係数 r: {correlationR}</Text>
+          <Button onClick={handleReset} variant="outline" color="deep-blue.7">リセット</Button>
+        </Group>
+      </Paper>
+    </Container>
+  );
+}
