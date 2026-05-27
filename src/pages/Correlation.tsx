@@ -1,5 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
-import { Container, Title, Text, Paper, Button, Group, Box } from '@mantine/core';
+import {
+  Container,
+  Title,
+  Text,
+  Paper,
+  Button,
+  Group,
+  Box,
+  Stack,
+  Card,
+  List,
+  ThemeIcon,
+  Divider,
+} from '@mantine/core';
+import { IconAlertTriangle, IconCheck, IconInfoCircle } from '@tabler/icons-react';
 
 export default function Correlation() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -212,6 +226,125 @@ export default function Correlation() {
           <Button onClick={handleReset} variant="outline" color="deep-blue.7">リセット</Button>
         </Group>
       </Paper>
+
+      <Stack mt={60} gap="xl">
+        <Divider
+          label={
+            <Group gap="xs">
+              <IconInfoCircle size={20} />
+              <Text fw={700}>さらに詳しく学ぶ</Text>
+            </Group>
+          }
+          labelPosition="center"
+        />
+
+        <Paper shadow="md" p="xl" withBorder radius="lg" bg="var(--mantine-color-body)">
+          <Stack gap="lg">
+            <Stack gap={4}>
+              <Title order={2} c="deep-blue.9">
+                相関関係 vs 因果関係
+              </Title>
+              <Text c="dimmed" size="sm">
+                Correlation vs. Causality
+              </Text>
+            </Stack>
+
+            <Text size="md" lh={1.7}>
+              データが連動して動いている（相関がある）からといって、必ずしも
+              <strong>「一方が原因で、もう一方が結果（因果関係）」</strong>
+              であるとは限りません。 統計学において、この区別は非常に重要です。
+            </Text>
+
+            <Card withBorder radius="md" p="xl" bg="var(--mantine-color-blue-light)">
+              <Stack gap="md">
+                <Group gap="xs">
+                  <IconAlertTriangle color="var(--mantine-color-blue-filled)" />
+                  <Title order={3} size="h4" c="blue.9">
+                    注意！「疑似相関」の罠
+                  </Title>
+                </Group>
+
+                <Text size="sm" fw={500}>
+                  有名な例：アイスクリームの売上と溺水事故
+                </Text>
+
+                <Text size="sm">
+                  夏になると<strong>「アイスクリームの売上が増える」</strong>
+                  と同時に、<strong>「プールでの溺水事故」</strong>
+                  も増える傾向があります。これらには強い正の相関が見られます。
+                </Text>
+
+                <Group grow align="stretch">
+                  <Paper p="md" withBorder radius="md" bg="white">
+                    <Stack gap="xs" align="center">
+                      <ThemeIcon color="red" variant="light" radius="xl">
+                        <IconAlertTriangle size={18} />
+                      </ThemeIcon>
+                      <Text fw={700} size="sm" c="red.7" ta="center">
+                        誤った解釈（因果関係）
+                      </Text>
+                      <Text size="xs" ta="center">
+                        「アイスクリームを食べることが原因で、人が溺れるようになった」
+                      </Text>
+                    </Stack>
+                  </Paper>
+
+                  <Paper p="md" withBorder radius="md" bg="white">
+                    <Stack gap="xs" align="center">
+                      <ThemeIcon color="green" variant="light" radius="xl">
+                        <IconCheck size={18} />
+                      </ThemeIcon>
+                      <Text fw={700} size="sm" c="green.7" ta="center">
+                        正しい理解（疑似相関）
+                      </Text>
+                      <Text size="xs" ta="center">
+                        「<strong>気温の上昇</strong>という共通の原因が、両方を増やしている」
+                      </Text>
+                    </Stack>
+                  </Paper>
+                </Group>
+
+                <Text size="xs" c="blue.8" bg="blue.0" p="xs" style={{ borderRadius: '4px' }}>
+                  このように、直接の関係はないのに第三の要因（潜伏変数）によって相関があるように見える現象を
+                  <strong>疑似相関 (Spurious Correlation)</strong>と呼びます。
+                </Text>
+              </Stack>
+            </Card>
+
+            <Box>
+              <Title order={4} size="h5" mb="md">
+                因果関係を見極める3つのチェック：
+              </Title>
+              <List
+                spacing="sm"
+                size="sm"
+                center
+                icon={
+                  <ThemeIcon color="deep-blue.6" size={24} radius="xl">
+                    <IconCheck size={16} />
+                  </ThemeIcon>
+                }
+              >
+                <List.Item>
+                  <Text size="sm">
+                    <strong>時間的順序：</strong> 原因（気温上昇）は結果（アイス売上増）の前に起きているか？
+                  </Text>
+                </List.Item>
+                <List.Item>
+                  <Text size="sm">
+                    <strong>共変性：</strong> 原因が変化したとき、結果もそれに伴って変化するか？
+                  </Text>
+                </List.Item>
+                <List.Item>
+                  <Text size="sm">
+                    <strong>他要因の排除：</strong> 他の理由（疑似相関）で説明できてしまわないか？
+                  </Text>
+                </List.Item>
+              </List>
+            </Box>
+          </Stack>
+        </Paper>
+      </Stack>
     </Container>
   );
 }
