@@ -2,6 +2,7 @@ import { HashRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { AppLayout } from './components/AppShell';
 import LawOfLargeNumbers from './pages/LawOfLargeNumbers';
 import Correlation from './pages/Correlation';
+import CentralLimitTheorem from './pages/CentralLimitTheorem';
 import { Title, Text, Container, Paper, ThemeIcon, rem, Stack, Button, Box, Divider, SimpleGrid } from '@mantine/core';
 import { IconChartBar, IconBulb, IconWorld, IconArrowRight } from '@tabler/icons-react';
 
@@ -105,6 +106,7 @@ function App() {
           <Route index element={<Welcome />} />
           <Route path="law-of-large-numbers" element={<LawOfLargeNumbers />} />
           <Route path="correlation" element={<Correlation />} />
+          <Route path="central-limit-theorem" element={<CentralLimitTheorem />} />
           {/* 他のページもここに追加 */}
         </Route>
       </Routes>

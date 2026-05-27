@@ -57,9 +57,9 @@ export function AppLayout() {
         />
         <NavLink
           href="#/central-limit-theorem"
-          label="中心極限定理 (準備中)"
+          label="中心極限定理"
           leftSection={<IconChartLine size="1rem" stroke={1.5} />}
-          disabled
+          onClick={close}
         />
       </AppShell.Navbar>
 
